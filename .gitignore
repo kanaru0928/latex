@@ -1,0 +1,6 @@
+*
+!.devcontainer
+!.devcontainer/*
+!.latexmkrc
+!texlive.profile
+!.gitignore
