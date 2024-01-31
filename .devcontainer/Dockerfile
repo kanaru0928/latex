@@ -5,6 +5,7 @@ ENV DEBCONF_NOWARNINGS=yes
 ENV PATH="/usr/local/texlive/2023/bin/x86_64-linux:$PATH"
 ENV LC_ALL=C
 
+# texliveのインストール
 RUN curl -OL https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz \
   && tar -xzf install-tl-unx.tar.gz
 COPY texlive.profile .
@@ -13,6 +14,8 @@ RUN cd install-tl-2* && \
   --repository http://ftp.jaist.ac.jp/pub/CTAN/systems/texlive/tlnet/
 COPY .latexmkrc /home/vscode/.latexmkrc
 RUN rm -rf install-tl-2* && rm install-tl-unx.tar.gz
+
+# aptパッケージのインストール
 RUN apt update \
   && apt install -y --no-install-recommends \
   libyaml-tiny-perl \
@@ -24,6 +27,8 @@ RUN apt update \
   && apt autoremove -y \
   && apt clean -y \
   && rm -rf /var/lib/apt/lists/*
+  
+# tlgmrのアップデート
 RUN tlmgr update --self --all
 # tlmgr install \
 # texcount \
@@ -31,9 +36,13 @@ RUN tlmgr update --self --all
 # latexindent \
 # texdef
 
+# gnuplotの設定
 RUN mkdir /usr/local/texlive/texmf-local/tex/latex/gnuplot && \
   cd /usr/local/texlive/texmf-local/tex/latex/gnuplot && \
   echo "set term tikz createstyle" > style.plt && \
   gnuplot style.plt && \
   rm style.plt && \
   mktexlsr
+
+# luaの設定
+RUN sed -i -E '/^ *notimestamp *=/s/false/true/' /usr/share/gnuplot/gnuplot/5.4/lua/gnuplot-tikz.lua
